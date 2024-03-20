@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "546699261245",
+    "project_id": "viteats-hackathon",
+    "storage_bucket": "viteats-hackathon.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546699261245:android:200658d953d30e974d4154",
+        "android_client_info": {
+          "package_name": "com.example.viteats"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBymh8tGIDOuXvBnv00p4FohXxpo9qSpxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
