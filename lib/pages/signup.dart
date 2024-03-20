@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:viteats/pages/bottom_nav.dart';
 import 'package:viteats/pages/login.dart';
 import 'package:viteats/widget/widget_support.dart';
 
@@ -10,6 +12,36 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  String email = "", password = "", name = "";
+
+  TextEditingController namecontroller = new TextEditingController();
+  TextEditingController mailcontroller = new TextEditingController();
+  TextEditingController passwordcontroller = new TextEditingController();
+
+  final _formkey = GlobalKey<FormState>();
+  registration() async {
+    if (password != null) {
+      try {
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(email: email, password: password);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Reg sucessfull')));
+        Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(builder: (context) => const BottomNav()));
+      } on FirebaseException catch (e) {
+        if (e.code == 'weak-password') {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(content: Text('Weak password')));
+        } else if (e.code == 'email-already-in-use') {
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Acc already in use')));
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,77 +98,118 @@ class _SignUpState extends State<SignUp> {
                         decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(20)),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 30),
-                            Text("SignUp",
-                                style: AppWidget.HeadlineTextFeildStyle()),
-                            const SizedBox(height: 20),
+                        child: Form(
+                          key: _formkey,
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 30),
+                              Text("SignUp",
+                                  style: AppWidget.HeadlineTextFeildStyle()),
+                              const SizedBox(height: 20),
 
-                            // Name
-                            TextField(
-                              decoration: InputDecoration(
-                                hintText: 'Name',
-                                hintStyle: AppWidget.LightTextFeildStyle(),
-                                prefixIcon: const Icon(
-                                  Icons.person_2_outlined,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-
-                            //VIT Email
-                            TextField(
-                              decoration: InputDecoration(
-                                hintText: 'VIT Email',
-                                hintStyle: AppWidget.LightTextFeildStyle(),
-                                prefixIcon: const Icon(
-                                  Icons.email_outlined,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-
-                            //Password
-                            TextField(
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                hintText: 'Password',
-                                hintStyle: AppWidget.LightTextFeildStyle(),
-                                prefixIcon: const Icon(
-                                  Icons.key_outlined,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 25),
-                            const SizedBox(height: 80.0),
-                            Material(
-                              elevation: 5.0,
-                              borderRadius: BorderRadius.circular(30.0),
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 10.0),
-                                width: 200,
-                                decoration: BoxDecoration(
-                                    color: const Color(0xffff5722),
-                                    borderRadius: BorderRadius.circular(30.0)),
-                                child: Center(
-                                  child: Text(
-                                    'SIGNUP',
-                                    style: AppWidget.boldTextFeildStyle(),
+                              // Name
+                              TextFormField(
+                                controller: namecontroller,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please Enter name';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'Name',
+                                  hintStyle: AppWidget.LightTextFeildStyle(),
+                                  prefixIcon: const Icon(
+                                    Icons.person_2_outlined,
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 20),
+
+                              //VIT Email
+                              TextFormField(
+                                controller: mailcontroller,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Enter email';
+                                  }
+                                  return null;
+                                },
+                                decoration: InputDecoration(
+                                  hintText: 'VIT Email',
+                                  hintStyle: AppWidget.LightTextFeildStyle(),
+                                  prefixIcon: const Icon(
+                                    Icons.email_outlined,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              //Password
+                              TextFormField(
+                                controller: passwordcontroller,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Enter password';
+                                  }
+                                  return null;
+                                },
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  hintText: 'Password',
+                                  hintStyle: AppWidget.LightTextFeildStyle(),
+                                  prefixIcon: const Icon(
+                                    Icons.key_outlined,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 25),
+                              const SizedBox(height: 80.0),
+
+                              //signup button
+                              GestureDetector(
+                                onTap: () async {
+                                  if (_formkey.currentState!.validate()) {
+                                    setState(() {
+                                      email = mailcontroller.text;
+                                      name = namecontroller.text;
+                                      password = passwordcontroller.text;
+                                    });
+                                  }
+                                  registration();
+                                },
+                                child: Material(
+                                  elevation: 5.0,
+                                  borderRadius: BorderRadius.circular(30.0),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10.0),
+                                    width: 200,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xffff5722),
+                                        borderRadius:
+                                            BorderRadius.circular(30.0)),
+                                    child: Center(
+                                      child: Text(
+                                        'SIGNUP',
+                                        style: AppWidget.boldTextFeildStyle(),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 50),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => LogIn()));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const LogIn()));
                       },
                       child: Text(
                         "Already have an account? Login",

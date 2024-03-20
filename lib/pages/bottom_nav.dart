@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:viteats/pages/home.dart';
 import 'package:viteats/pages/order.dart';
 import 'package:viteats/pages/profile.dart';
+import 'package:viteats/pages/signup.dart';
 import 'package:viteats/pages/wallet.dart';
 
 class BottomNav extends StatefulWidget {
@@ -21,15 +22,18 @@ class _BottomNavState extends State<BottomNav> {
   late Profile profile;
   late Order order;
   late Wallet wallet;
+  late SignUp signUp; // to remove later
 
   @override
   void initState() {
     homepage = const Home();
     order = const Order();
-    profile = const Profile();
+    // profile = const Profile(); // uncomment later
+    signUp = const SignUp(); // to remove later
     wallet = const Wallet();
 
-    pages = [homepage, order, wallet, profile];
+    // pages = [homepage, order, wallet, profile]; //uncomment
+    pages = [homepage, order, wallet, signUp];
 
     super.initState();
   }
